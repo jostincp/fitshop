@@ -1,0 +1,22 @@
+{
+  "name": "fitshop",
+  "version": "1.0.0",
+  "description": "Actividad ecommerce de unidad 5",
+  "main": "index.html",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jostincp/fitshop.git"
+  },
+  "keywords": [
+    "unidad5"
+  ],
+  "author": "jostincp",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jostincp/fitshop/issues"
+  },
+  "homepage": "https://github.com/jostincp/fitshop#readme"
+}
