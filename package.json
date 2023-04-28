@@ -4,7 +4,8 @@
   "description": "Actividad ecommerce de unidad 5",
   "main": "index.html",
   "scripts": {
-    "test": "test"
+    "test": "test",
+    "start": "npx http-server"
   },
   "repository": {
     "type": "git",
