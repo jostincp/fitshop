@@ -1,12 +1,12 @@
 from django.contrib.auth.models import User
 from django.db import models
 
-class Category(models.Model):
-    name = models.CharField(max_length=50)
-    description = models.TextField()
+class Categoria(models.Model):
+    nombre = models.CharField(max_length=50)
+    descripcion = models.TextField()
 
     def __str__(self):
-        return self.name
+        return self.nombre
 
 class Departamento(models.Model):
     nombre = models.CharField(max_length=100)
@@ -21,49 +21,59 @@ class Municipio(models.Model):
     def __str__(self):
         return self.nombre
 
-class Product(models.Model):
-    name = models.CharField(max_length=255)
-    description = models.TextField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    quantity_available = models.IntegerField()
-    image = models.ImageField(upload_to='product_images/')
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, default='Sin categoría')
+class Producto(models.Model):
+    nombre = models.CharField(max_length=255)
+    descripcion = models.TextField()
+    precio = models.DecimalField(max_digits=10, decimal_places=2)
+    cantidad_disponible = models.IntegerField()
+    imagen = models.ImageField(upload_to='product_images/')
+    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, default='None')
 
     def __str__(self):
-        return self.name
+        return self.nombre
 
-class Order(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    date_created = models.DateTimeField(auto_now_add=True)
-    shipping_address = models.ForeignKey('ShippingAddress', null=True, on_delete=models.SET_NULL)
-    order_status = models.CharField(max_length=20)
+class Pedido(models.Model):
+    ESTADO_PEDIDO_CHOICES = [
+        ('pendiente', 'Pendiente'),
+        ('en_proceso', 'En proceso'),
+        ('completado', 'Completado'),
+        ('cancelado', 'Cancelado'),
+    ]
 
-class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.IntegerField()
-    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    direccion_envio = models.ForeignKey('DireccionEnvio', null=True, on_delete=models.SET_NULL)
+    estado_pedido = models.CharField(max_length=20, choices=ESTADO_PEDIDO_CHOICES)
 
-class ShippingAddress(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    address = models.CharField(max_length=255)
-    city = models.ForeignKey(Municipio, on_delete=models.CASCADE)
-    state = models.ForeignKey(Departamento, on_delete=models.CASCADE)
-    postal_code = models.CharField(max_length=20)
+    def __str__(self):
+        return f"Pedido {self.id}"
 
-class PaymentMethod(models.Model):
-    name = models.CharField(max_length=50)
-    description = models.TextField()
+class ItemPedido(models.Model):
+    pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+    cantidad = models.IntegerField()
+    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
 
-class Payment(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    payment_method = models.ForeignKey(PaymentMethod, on_delete=models.CASCADE)
-    payment_date = models.DateTimeField()
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+class DireccionEnvio(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    direccion = models.CharField(max_length=255)
+    ciudad = models.ForeignKey(Municipio, on_delete=models.CASCADE)
+    estado = models.ForeignKey(Departamento, on_delete=models.CASCADE)
+    codigo_postal = models.CharField(max_length=20)
 
-class ProductComment(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    comment = models.TextField()
-    rating = models.IntegerField()
-    created_at = models.DateTimeField(auto_now_add=True)
+class MetodoPago(models.Model):
+    nombre = models.CharField(max_length=50)
+    descripcion = models.TextField()
+
+class Pago(models.Model):
+    pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)
+    metodo_pago = models.ForeignKey(MetodoPago, on_delete=models.CASCADE)
+    fecha_pago = models.DateTimeField()
+    monto_total = models.DecimalField(max_digits=10, decimal_places=2)
+
+class ComentarioProducto(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+    comentario = models.TextField()
+    calificacion = models.IntegerField()
+    creado_en = models.DateTimeField(auto_now_add=True)
