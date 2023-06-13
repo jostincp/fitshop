@@ -1,6 +1,8 @@
 from django.contrib import admin
 from .models import Categoria, Departamento, Municipio, Producto, Pedido, ItemPedido, DireccionEnvio, MetodoPago, Pago, ComentarioProducto
 
+#Registra tus modelos aquí
+
 admin.site.register(Categoria)
 admin.site.register(Departamento)
 admin.site.register(Municipio)
